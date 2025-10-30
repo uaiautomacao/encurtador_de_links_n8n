@@ -1,0 +1,576 @@
+{
+  "name": "Encurtador de Links - U.ai Automação",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Pega os dados do Edit Fields\nconst urlLonga = $input.item.json.url_longa;\nconst urlBase = $input.item.json.url_base;\n\n// Função para gerar código curto único\nfunction gerarCodigoCurto(url) {\n  let hash = 0;\n  for (let i = 0; i < url.length; i++) {\n    hash = ((hash << 5) - hash) + url.charCodeAt(i);\n    hash |= 0;\n  }\n  \n  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';\n  let codigo = '';\n  let num = Math.abs(hash);\n  \n  while (num > 0 && codigo.length < 6) {\n    codigo = chars[num % chars.length] + codigo;\n    num = Math.floor(num / chars.length);\n  }\n  \n  // Adiciona timestamp para garantir unicidade\n  const timestamp = Date.now().toString(36).slice(-3);\n  codigo = codigo + timestamp;\n  \n  return codigo || 'a1b2c3';\n}\n\n// Gera o código curto\nconst codigoCurto = gerarCodigoCurto(urlLonga);\nconst urlEncurtada = `${urlBase}/${codigoCurto}`;\n\n// Retorna os dados\nreturn {\n  codigo: codigoCurto,\n  url_original: urlLonga,\n  url_encurtada: urlEncurtada,\n  criado_em: new Date().toISOString(),\n  acessos: 0\n};"
+      },
+      "id": "94f75c71-aad7-4ee7-88d6-661dd7e0565b",
+      "name": "Gerar Código Curto1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1056,
+        96
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        688,
+        48
+      ],
+      "id": "df449fdf-2cd3-4ab1-873e-69116f0ed50f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bcef66ea-32fd-4a2f-a90d-70791dac6747",
+              "name": "url_longa",
+              "value": "https://youtu.be/PN67GJw65KE?si=GkRvxHfCKSvmnRNK",
+              "type": "string"
+            },
+            {
+              "id": "54a7e123-c427-4d7a-932c-8e85b66d4268",
+              "name": "url_base",
+              "value": "https://e.uaiautomacao.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        224
+      ],
+      "id": "5651dcf8-7fbf-4ed0-8e41-ecd9317a9ad4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "x69mapoNW1rOuM5G",
+          "mode": "list",
+          "cachedResultName": "001",
+          "cachedResultUrl": "/projects/fhBRyWLk34thOscn/datatables/x69mapoNW1rOuM5G"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "url_original",
+              "displayName": "url_original",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "url_encurtada",
+              "displayName": "url_encurtada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "acessos",
+              "displayName": "acessos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        224
+      ],
+      "id": "ebc8bb27-7d4a-4399-aa76-7f925b1924b6",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "url-existe",
+              "leftValue": "={{ $json.url_original }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "db42f2d5-39e3-4923-bfda-d1e049f53a72",
+      "name": "Encontrou?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        864,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "id": "ff2a2ca6-5e11-4c31-84b7-c31c1940af11",
+      "name": "Respond 404 (Not Found)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1440,
+        848
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "path": "encurtador",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "93637ce6-c046-4e10-9b8f-6859813f9c55",
+      "name": "Webhook Recebe Requisicao1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        496,
+        704
+      ],
+      "webhookId": "f393a358-f8e1-4436-b751-966d5165ca2f"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "x69mapoNW1rOuM5G",
+          "mode": "list"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "codigo",
+              "keyValue": "={{ $json.query.code }}"
+            }
+          ]
+        }
+      },
+      "id": "6d080835-fc3a-43ca-ad68-74ce7bc78170",
+      "name": "Get row(s)1",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        688,
+        544
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const acessosAtual = parseInt($input.item.json.acessos) || 0;\nconst novosAcessos = acessosAtual + 1;\n\nreturn {\n  codigo: $input.item.json.codigo,\n  url_original: $input.item.json.url_original,\n  url_encurtada: $input.item.json.url_encurtada,\n  criado_em: $input.item.json.criado_em,\n  acessos: novosAcessos,\n  id: $input.item.json.id\n};"
+      },
+      "id": "0ba5f28c-934c-4756-a207-821bcfb866cb",
+      "name": "Incrementar Contador1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "x69mapoNW1rOuM5G",
+          "mode": "list"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "codigo",
+              "keyValue": "={{ $json.codigo }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        }
+      },
+      "id": "f8beff1b-3881-4964-af5c-a583ffef8058",
+      "name": "Update row(s)1",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {
+          "responseCode": 302,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Location",
+                "value": "={{ $json.url_original }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1424,
+        544
+      ],
+      "id": "ae271eeb-83ab-4203-91f9-58481b26df39",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        224
+      ],
+      "id": "3a43d0a3-afb5-4305-a3d4-de0ea566900d",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        672
+      ],
+      "id": "2a617216-2bad-4eb0-9b3b-f2aef52e60ec",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15c969ee-63b9-4bee-a0b3-aa8625409f32",
+              "name": "code",
+              "value": "404",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1056,
+        848
+      ],
+      "id": "ecb5f59e-c936-4986-b42a-7ba1cfed3843",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "content": "## ⚡ WORKFLOW 2: REDIRECIONADOR\n\nEste workflow RESOLVE os links curtos.\n\n**Fluxo:**\n1. Worker chama webhook com `?code=abc123`\n2. Busca código no banco\n3. Se encontrar: incrementa contador + redirect 302\n4. Se não encontrar: retorna 404\n\n**IMPORTANTE:** Mantenha sempre ATIVO!",
+        "height": 608,
+        "width": 1696,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        416
+      ],
+      "typeVersion": 1,
+      "id": "68504f6b-3134-4e76-a6ba-a02faac6fa2e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🔧 WORKFLOW 1: CRIAR LINKS\n\nEste workflow CRIA novos links curtos.\n\n**Como usar:**\n1. Clique no \"Edit Fields\"\n2. Cole a URL longa em `url_longa`\n3. Confirme `url_base` (seu subdomínio)\n4. Execute manualmente\n\n**Resultado:** Link curto gerado e salvo no banco.\n\n**Produção:** Substitua por API/webhook/integração.",
+        "height": 496,
+        "width": 1696,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "f4b25990-0a1d-468c-9b4f-be55b7f2a0b7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ CONFIGURAÇÃO\n\n**Edit Fields:**\n- `url_longa`: URL que deseja encurtar\n- `url_base`: Seu subdomínio (ex: https://e.seudominio.com)\n\n**Webhook:**\n- Path: `encurtador`\n- Method: GET\n- URL deve ser configurada no Worker",
+        "height": 320,
+        "width": 448,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "7de92e86-8315-4098-b364-f0989e15e54f",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {
+    "Webhook Recebe Requisicao1": [
+      {
+        "json": {
+          "headers": {
+            "host": "webhook.uaiautomacao.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2804:14c:fc8e:805e:fda7:5106:4a20:a11f",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "BR",
+            "cf-ray": "996e0ab4a3aa98a5-GIG",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "uaiautomacao.com",
+            "x-forwarded-for": "172.70.144.30",
+            "x-forwarded-host": "webhook.uaiautomacao.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "583443c5d4b7",
+            "x-real-ip": "172.70.144.30"
+          },
+          "params": {},
+          "query": {
+            "code": "ctECSm2ae36"
+          },
+          "body": {},
+          "webhookUrl": "https://webhook.uaiautomacao.com/webhook/encurtador",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Gerar Código Curto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar Código Curto1": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrou?": {
+      "main": [
+        [
+          {
+            "node": "Incrementar Contador1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Recebe Requisicao1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)1": {
+      "main": [
+        [
+          {
+            "node": "Encontrou?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incrementar Contador1": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 404 (Not Found)": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Respond 404 (Not Found)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5db5009c-dce4-4076-9f24-cec8a0197cc0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5de35990e858b8d5432c2e0e601fc1153252b17dd0ac5b52db0ee001bbba0f1e"
+  },
+  "id": "6R4fnAUZEvzZw1K5",
+  "tags": []
+}

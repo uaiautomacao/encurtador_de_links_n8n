@@ -24,7 +24,7 @@ Sistema completo de encurtamento de URLs usando Cloudflare Workers e N8N. Gratui
 
 ## 📖 Documentação Completa
 
-**[Acesse a documentação completa aqui](https://seusite.com/encurtador-links-docs.html)**
+**[Acesse a documentação completa aqui](https://encurtador.uaiautomacao.com)**
 
 A documentação inclui:
 - Tutorial passo a passo completo
